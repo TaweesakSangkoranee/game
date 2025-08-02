@@ -8,19 +8,7 @@ let draggedPiece = null;
 let timeLeft = 60;
 let timerInterval = null;
 let gameEnded = false;
-let userName = "Player"; // Default ชื่อผู้ใช้
-
-const positions = [
-  { id: 1, bgPos: "0 0" },
-  { id: 2, bgPos: "-100px 0" },
-  { id: 3, bgPos: "-200px 0" },
-  { id: 4, bgPos: "0 -100px" },
-  { id: 5, bgPos: "-100px -100px" },
-  { id: 6, bgPos: "-200px -100px" },
-  { id: 7, bgPos: "0 -200px" },
-  { id: 8, bgPos: "-100px -200px" },
-  { id: 9, bgPos: "-200px -200px" },
-];
+let userName = "Player";
 
 async function initializeLiff() {
   try {
@@ -35,55 +23,145 @@ async function initializeLiff() {
   }
 }
 
-function shuffle(array) {
-  let currentIndex = array.length, randomIndex;
-  while (currentIndex !== 0) {
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
-    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
   }
-  return array;
+  return arr;
 }
+
+const positions = Array.from({ length: 9 }, (_, i) => i);
 
 function createBoard() {
   board.innerHTML = "";
   piecesContainer.innerHTML = "";
 
-  positions.forEach((pos) => {
+  // สร้างช่องเปล่า
+  for (let i = 0; i < 9; i++) {
     const cell = document.createElement("div");
-    cell.classList.add("cell");
-    cell.dataset.id = pos.id;
+    cell.className = "cell";
+    cell.dataset.index = i;
+    cell.addEventListener("dragover", e => e.preventDefault());
+    cell.addEventListener("drop", handleDrop);
+
+    // touch event สำหรับมือถือ
+    cell.addEventListener("touchmove", e => e.preventDefault());
+    cell.addEventListener("touchend", handleTouchDrop);
+
     board.appendChild(cell);
-  });
+  }
 
-  const shuffled = shuffle([...positions]);
-  shuffled.forEach((pos) => {
+  // สร้างชิ้นแบบสุ่ม
+  shuffleArray(positions).forEach(i => {
     const piece = document.createElement("div");
-    piece.classList.add("piece");
+    piece.className = "piece";
     piece.draggable = true;
-    piece.dataset.id = pos.id;
-    piece.style.backgroundPosition = pos.bgPos;
+    piece.dataset.correct = i;
+    piece.style.backgroundPosition = `${-(i % 3) * 100}px ${-Math.floor(i / 3) * 100}px`;
 
-    piece.addEventListener("dragstart", (e) => {
+    piece.addEventListener("dragstart", e => {
       draggedPiece = e.target;
     });
 
-    piece.addEventListener("dragend", () => {
-      draggedPiece = null;
+    // touch start สำหรับมือถือ
+    piece.addEventListener("touchstart", e => {
+      draggedPiece = e.target;
     });
 
     piecesContainer.appendChild(piece);
   });
 }
 
-function checkWin() {
-  const cells = board.querySelectorAll(".cell");
-  for (let cell of cells) {
-    if (!cell.firstChild || cell.firstChild.dataset.id !== cell.dataset.id) {
-      return false;
+function handleDrop(e) {
+  if (gameEnded || !draggedPiece) return;
+
+  const dropTarget = e.target;
+
+  if (dropTarget.classList.contains("piece")) {
+    const targetPiece = dropTarget;
+    const fromCell = draggedPiece.parentNode;
+    const toCell = targetPiece.parentNode;
+
+    toCell.replaceChild(draggedPiece, targetPiece);
+    fromCell.appendChild(targetPiece);
+  } else if (dropTarget.classList.contains("cell")) {
+    const existingPiece = dropTarget.firstChild;
+
+    if (existingPiece && existingPiece !== draggedPiece) {
+      const fromCell = draggedPiece.parentNode;
+      dropTarget.replaceChild(draggedPiece, existingPiece);
+      fromCell.appendChild(existingPiece);
+    } else if (!existingPiece) {
+      dropTarget.appendChild(draggedPiece);
+    }
+  } else if (dropTarget.id === "pieces") {
+    if (draggedPiece.parentNode !== piecesContainer) {
+      piecesContainer.appendChild(draggedPiece);
     }
   }
-  return true;
+
+  draggedPiece = null;
+  checkWin();
+}
+
+function handleTouchDrop(e) {
+  if (gameEnded) return;
+
+  const touch = e.changedTouches[0];
+  const elem = document.elementFromPoint(touch.clientX, touch.clientY);
+
+  if (!draggedPiece || !elem) return;
+
+  const fromCell = draggedPiece.parentNode;
+
+  if (elem.classList.contains("piece")) {
+    const targetPiece = elem;
+    const toCell = targetPiece.parentNode;
+
+    toCell.replaceChild(draggedPiece, targetPiece);
+    fromCell.appendChild(targetPiece);
+  } else if (elem.classList.contains("cell")) {
+    const existingPiece = elem.firstChild;
+
+    if (existingPiece) {
+      elem.replaceChild(draggedPiece, existingPiece);
+      if (fromCell.classList.contains("cell") || fromCell.id === "pieces") {
+        fromCell.appendChild(existingPiece);
+      }
+    } else {
+      elem.appendChild(draggedPiece);
+    }
+  } else if (elem.id === "pieces") {
+    if (fromCell !== piecesContainer) {
+      piecesContainer.appendChild(draggedPiece);
+    }
+  }
+
+  draggedPiece = null;
+  checkWin();
+}
+
+function checkWin() {
+  const cells = document.querySelectorAll(".cell");
+  for (let cell of cells) {
+    const piece = cell.firstChild;
+    if (!piece) return;
+    if (piece.dataset.correct !== cell.dataset.index) return;
+  }
+  endGame(true);
+}
+
+function endGame(win) {
+  gameEnded = true;
+  clearInterval(timerInterval);
+  if (win) {
+    message.textContent = `${userName} wins 🎉 Congratulations!`;
+    message.classList.remove("fail");
+  } else {
+    message.textContent = `${userName} loses 😞 Try again!`;
+    message.classList.add("fail");
+  }
 }
 
 function startTimer() {
@@ -100,49 +178,6 @@ function startTimer() {
     }
   }, 1000);
 }
-
-function endGame(win) {
-  gameEnded = true;
-  clearInterval(timerInterval);
-  if (win) {
-    message.textContent = `${userName} wins 🎉 Congratulations!`;
-    message.classList.remove("fail");
-  } else {
-    message.textContent = `${userName} loses 😞 Try again!`;
-    message.classList.add("fail");
-  }
-}
-
-board.addEventListener("dragover", (e) => e.preventDefault());
-
-board.addEventListener("drop", (e) => {
-  if (gameEnded || !draggedPiece) return;
-
-  const targetCell = e.target.closest(".cell");
-  if (!targetCell) return;
-
-  if (!targetCell.firstChild) {
-    // ช่องว่าง ไม่มีชิ้นจิ๊กซอว์
-    targetCell.appendChild(draggedPiece);
-  } else if (targetCell.firstChild !== draggedPiece) {
-    // ถ้าวางบนชิ้นอื่น ให้สลับชิ้นกัน
-    const targetPiece = targetCell.firstChild;
-    const draggedParent = draggedPiece.parentNode;
-
-    targetCell.replaceChild(draggedPiece, targetPiece);
-    draggedParent.appendChild(targetPiece);
-  }
-
-  if (checkWin()) {
-    endGame(true);
-  }
-});
-
-piecesContainer.addEventListener("dragover", (e) => e.preventDefault());
-piecesContainer.addEventListener("drop", (e) => {
-  if (gameEnded || !draggedPiece) return;
-  piecesContainer.appendChild(draggedPiece);
-});
 
 closeBtn.addEventListener("click", () => {
   if (liff.isInClient()) {
