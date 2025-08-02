@@ -10,7 +10,7 @@ let gameEnded = false;
 
 const positions = Array.from({ length: 9 }, (_, i) => i);
 
-// สร้างช่องเปล่า
+// สร้างช่องเปล่าในบอร์ด 9 ช่อง
 for (let i = 0; i < 9; i++) {
   const cell = document.createElement("div");
   cell.className = "cell";
@@ -18,13 +18,13 @@ for (let i = 0; i < 9; i++) {
   cell.addEventListener("dragover", e => e.preventDefault());
   cell.addEventListener("drop", handleDrop);
 
-  // เพิ่ม touch event สำหรับมือถือ
+  // touch event สำหรับมือถือ
   cell.addEventListener("touchmove", e => e.preventDefault());
   cell.addEventListener("touchend", handleTouchDrop);
   board.appendChild(cell);
 }
 
-// สร้างชิ้นแบบสุ่ม
+// สร้างชิ้นส่วนแบบสุ่มจากภาพเดียวกัน
 shuffleArray(positions).forEach(i => {
   const piece = document.createElement("div");
   piece.className = "piece";
@@ -44,6 +44,7 @@ shuffleArray(positions).forEach(i => {
   piecesContainer.appendChild(piece);
 });
 
+// ตั้งเวลา countdown 60 วินาที
 timerInterval = setInterval(() => {
   if (gameEnded) return;
   timeLeft--;
@@ -53,18 +54,21 @@ timerInterval = setInterval(() => {
   }
 }, 1000);
 
+// จัดการการวางชิ้นส่วนด้วย mouse drag-drop
 function handleDrop(e) {
   if (gameEnded || !draggedPiece) return;
 
   const dropTarget = e.target;
 
   if (dropTarget.classList.contains("piece")) {
+    // สลับตำแหน่งชิ้นส่วน
     const targetPiece = dropTarget;
     const fromCell = draggedPiece.parentNode;
     const toCell = targetPiece.parentNode;
 
     toCell.replaceChild(draggedPiece, targetPiece);
     fromCell.appendChild(targetPiece);
+
   } else if (dropTarget.classList.contains("cell")) {
     const existingPiece = dropTarget.firstChild;
 
@@ -85,6 +89,7 @@ function handleDrop(e) {
   checkWin();
 }
 
+// จัดการการวางชิ้นส่วนด้วย touch (มือถือ)
 function handleTouchDrop(e) {
   if (gameEnded) return;
 
@@ -101,6 +106,7 @@ function handleTouchDrop(e) {
 
     toCell.replaceChild(draggedPiece, targetPiece);
     fromCell.appendChild(targetPiece);
+
   } else if (elem.classList.contains("cell")) {
     const existingPiece = elem.firstChild;
 
@@ -112,6 +118,7 @@ function handleTouchDrop(e) {
     } else {
       elem.appendChild(draggedPiece);
     }
+
   } else if (elem.id === "pieces") {
     if (fromCell !== piecesContainer) {
       piecesContainer.appendChild(draggedPiece);
@@ -122,6 +129,7 @@ function handleTouchDrop(e) {
   checkWin();
 }
 
+// เช็คว่าผู้เล่นจับชิ้นส่วนถูกตำแหน่งครบหรือยัง
 function checkWin() {
   const cells = document.querySelectorAll(".cell");
   for (let cell of cells) {
@@ -132,6 +140,7 @@ function checkWin() {
   endGame(true);
 }
 
+// จบเกม แสดงข้อความชนะหรือแพ้
 function endGame(win) {
   gameEnded = true;
   clearInterval(timerInterval);
@@ -144,6 +153,7 @@ function endGame(win) {
   }
 }
 
+// ฟังก์ชันสุ่มตำแหน่งชิ้นส่วน
 function shuffleArray(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -152,9 +162,10 @@ function shuffleArray(arr) {
   return arr;
 }
 
+// เริ่มต้น LIFF และเชื่อมปุ่มปิด
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    await liff.init({ liffId: "2007868084-owa5R88x" }); // เปลี่ยนเป็น LIFF ID จริงของคุณ
+    await liff.init({ liffId: "2007868117-v7XkrPDn" }); // ใส่ LIFF ID ที่ต้องการ
 
     if (!liff.isLoggedIn()) {
       liff.login();
@@ -167,7 +178,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const closeBtn = document.getElementById("closeBtn");
     closeBtn.addEventListener("click", () => {
       if (liff.isInClient()) {
-        liff.closeWindow();  // ปิด LIFF และกลับไปหน้าแชทในแอพ LINE
+        liff.closeWindow();
       } else {
         alert("This app is not running inside the LINE app.");
       }
