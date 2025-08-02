@@ -8,7 +8,7 @@ let draggedPiece = null;
 let timeLeft = 60;
 let timerInterval = null;
 let gameEnded = false;
-let userName = "ผู้เล่น"; // ค่าเริ่มต้น
+let userName = "Player";
 
 const positions = [
   { id: 1, bgPos: "0 0" },
@@ -24,16 +24,14 @@ const positions = [
 
 async function initializeLiff() {
   try {
-    await liff.init({ liffId: "2007868117-v7XkrPDn" }); // เปลี่ยนเป็น LIFF ID จริงของคุณ
+    await liff.init({ liffId: "2007868117-v7XkrPDn" }); // ใช้ LIFF ID ของคุณ
     if (liff.isLoggedIn()) {
       const profile = await liff.getProfile();
-      userName = profile.displayName || "ผู้เล่น";
-    } else {
-      userName = "ผู้เล่น";
+      userName = profile.displayName || "Player";
     }
   } catch (error) {
-    console.error("LIFF init หรือดึงโปรไฟล์ไม่สำเร็จ", error);
-    userName = "ผู้เล่น";
+    console.error("LIFF init failed", error);
+    userName = "Player";
   }
 }
 
@@ -58,8 +56,8 @@ function createBoard() {
     board.appendChild(cell);
   });
 
-  let shuffledPositions = shuffle([...positions]);
-  shuffledPositions.forEach((pos) => {
+  const shuffled = shuffle([...positions]);
+  shuffled.forEach((pos) => {
     const piece = document.createElement("div");
     piece.classList.add("piece");
     piece.draggable = true;
@@ -91,10 +89,7 @@ function checkWin() {
 function startTimer() {
   timerDisplay.textContent = `Time: ${timeLeft}s`;
   timerInterval = setInterval(() => {
-    if (gameEnded) {
-      clearInterval(timerInterval);
-      return;
-    }
+    if (gameEnded) return clearInterval(timerInterval);
     timeLeft--;
     timerDisplay.textContent = `Time: ${timeLeft}s`;
     if (timeLeft <= 0) {
@@ -115,22 +110,12 @@ function endGame(win) {
   }
 }
 
-
-
 board.addEventListener("dragover", (e) => e.preventDefault());
 board.addEventListener("drop", (e) => {
   if (gameEnded || !draggedPiece) return;
-
   if (e.target.classList.contains("cell") && !e.target.firstChild) {
     e.target.appendChild(draggedPiece);
-
-    if (draggedPiece.parentNode === piecesContainer) {
-      piecesContainer.removeChild(draggedPiece);
-    }
-
-    if (checkWin()) {
-      endGame(true);
-    }
+    if (checkWin()) endGame(true);
   }
 });
 
@@ -144,7 +129,7 @@ closeBtn.addEventListener("click", () => {
   if (liff.isInClient()) {
     liff.closeWindow();
   } else {
-    alert("กรุณาเปิดลิงก์นี้จากในแอป LINE เท่านั้นนะจ้า 🙏");
+    alert("Please open this from the LINE app.");
   }
 });
 
@@ -153,6 +138,3 @@ window.onload = async () => {
   createBoard();
   startTimer();
 };
-
-
-
