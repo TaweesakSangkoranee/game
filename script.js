@@ -167,4 +167,40 @@ function shuffleArray(arr) {
   }
   return arr;
 }
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    await liff.init({ liffId: "2007868084-owa5R88x" }); // Replace with your real LIFF ID
+
+    if (!liff.isLoggedIn()) {
+      liff.login(); // Redirects to LINE login
+      return;
+    }
+
+    const profile = await liff.getProfile();
+    const name = profile.displayName;
+    const userId = profile.userId;
+    const pictureUrl = profile.pictureUrl;
+
+    // Show greeting message with display name
+    const messageDiv = document.getElementById("message");
+    messageDiv.innerHTML = `👋 Hello, ${name}`;
+
+    // Optional: log user info
+    console.log("User Info:", { name, userId, pictureUrl });
+
+    // Exit LIFF when button is clicked
+    const closeBtn = document.getElementById("closeBtn");
+    closeBtn.addEventListener("click", () => {
+      if (liff.isInClient()) {
+        liff.closeWindow();
+      } else {
+        alert("This is not running inside the LINE app.");
+      }
+    });
+
+  } catch (err) {
+    console.error("LIFF initialization error:", err);
+    alert("Failed to initialize LINE LIFF.");
+  }
+});
 
