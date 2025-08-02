@@ -162,22 +162,19 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-  const closeBtn = document.getElementById("closeBtn");
-closeBtn.addEventListener("click", () => {
-  if (liff.isInClient()) {
-    liff.closeWindow();  // ปิด LIFF แล้วกลับไปหน้าแชท LINE
-  } else {
-    alert("This app is not running inside the LINE app.");
-  }
-});
-
-
+ document.getElementById("closeBtn").addEventListener("click", () => {
+      if (liff.isInClient()) {
+        liff.closeWindow(); // ปิด LIFF แล้วกลับหน้าแชท LINE
+      } else {
+        alert("This app is not running inside the LINE app.");
+      }
+    });
 
   } catch (error) {
-    console.error("LIFF initialization failed:", error);
-    alert("Failed to initialize LINE LIFF.");
+    console.error("LIFF initialization failed", error);
   }
 });
+
 
 
 
