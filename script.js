@@ -8,7 +8,7 @@ let draggedPiece = null;
 let timeLeft = 60;
 let timerInterval = null;
 let gameEnded = false;
-let userName = "Player"; // Default
+let userName = "Player"; // Default ชื่อผู้ใช้
 
 const positions = [
   { id: 1, bgPos: "0 0" },
@@ -105,7 +105,7 @@ function endGame(win) {
   gameEnded = true;
   clearInterval(timerInterval);
   if (win) {
-    message.textContent = `${userName} wins 🎉`;
+    message.textContent = `${userName} wins 🎉 Congratulations!`;
     message.classList.remove("fail");
   } else {
     message.textContent = `${userName} loses 😞 Try again!`;
@@ -114,16 +114,27 @@ function endGame(win) {
 }
 
 board.addEventListener("dragover", (e) => e.preventDefault());
+
 board.addEventListener("drop", (e) => {
   if (gameEnded || !draggedPiece) return;
 
   const targetCell = e.target.closest(".cell");
-  if (targetCell && !targetCell.firstChild) {
-    targetCell.appendChild(draggedPiece);
+  if (!targetCell) return;
 
-    if (checkWin()) {
-      endGame(true);
-    }
+  if (!targetCell.firstChild) {
+    // ช่องว่าง ไม่มีชิ้นจิ๊กซอว์
+    targetCell.appendChild(draggedPiece);
+  } else if (targetCell.firstChild !== draggedPiece) {
+    // ถ้าวางบนชิ้นอื่น ให้สลับชิ้นกัน
+    const targetPiece = targetCell.firstChild;
+    const draggedParent = draggedPiece.parentNode;
+
+    targetCell.replaceChild(draggedPiece, targetPiece);
+    draggedParent.appendChild(targetPiece);
+  }
+
+  if (checkWin()) {
+    endGame(true);
   }
 });
 
