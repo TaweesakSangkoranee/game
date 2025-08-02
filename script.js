@@ -8,7 +8,7 @@ let draggedPiece = null;
 let timeLeft = 60;
 let timerInterval = null;
 let gameEnded = false;
-let userName = "Player";
+let userName = "Player"; // Default
 
 const positions = [
   { id: 1, bgPos: "0 0" },
@@ -24,13 +24,13 @@ const positions = [
 
 async function initializeLiff() {
   try {
-    await liff.init({ liffId: "2007868117-v7XkrPDn" }); // ใช้ LIFF ID ของคุณ
+    await liff.init({ liffId: "2007868117-v7XkrPDn" });
     if (liff.isLoggedIn()) {
       const profile = await liff.getProfile();
       userName = profile.displayName || "Player";
     }
   } catch (error) {
-    console.error("LIFF init failed", error);
+    console.error("LIFF initialization failed", error);
     userName = "Player";
   }
 }
@@ -61,8 +61,8 @@ function createBoard() {
     const piece = document.createElement("div");
     piece.classList.add("piece");
     piece.draggable = true;
-    piece.style.backgroundPosition = pos.bgPos;
     piece.dataset.id = pos.id;
+    piece.style.backgroundPosition = pos.bgPos;
 
     piece.addEventListener("dragstart", (e) => {
       draggedPiece = e.target;
@@ -89,7 +89,10 @@ function checkWin() {
 function startTimer() {
   timerDisplay.textContent = `Time: ${timeLeft}s`;
   timerInterval = setInterval(() => {
-    if (gameEnded) return clearInterval(timerInterval);
+    if (gameEnded) {
+      clearInterval(timerInterval);
+      return;
+    }
     timeLeft--;
     timerDisplay.textContent = `Time: ${timeLeft}s`;
     if (timeLeft <= 0) {
@@ -113,9 +116,14 @@ function endGame(win) {
 board.addEventListener("dragover", (e) => e.preventDefault());
 board.addEventListener("drop", (e) => {
   if (gameEnded || !draggedPiece) return;
-  if (e.target.classList.contains("cell") && !e.target.firstChild) {
-    e.target.appendChild(draggedPiece);
-    if (checkWin()) endGame(true);
+
+  const targetCell = e.target.closest(".cell");
+  if (targetCell && !targetCell.firstChild) {
+    targetCell.appendChild(draggedPiece);
+
+    if (checkWin()) {
+      endGame(true);
+    }
   }
 });
 
@@ -129,7 +137,7 @@ closeBtn.addEventListener("click", () => {
   if (liff.isInClient()) {
     liff.closeWindow();
   } else {
-    alert("Please open this from the LINE app.");
+    alert("Please open this link from the LINE app 🙏");
   }
 });
 
