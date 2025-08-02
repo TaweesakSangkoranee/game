@@ -8,7 +8,7 @@ let draggedPiece = null;
 let timeLeft = 60;
 let timerInterval = null;
 let gameEnded = false;
-let userName = "ผู้เล่น"; // กำหนดชื่อเริ่มต้น
+let userName = "ผู้เล่น"; // ค่าเริ่มต้น
 
 const positions = [
   { id: 1, bgPos: "0 0" },
@@ -22,10 +22,9 @@ const positions = [
   { id: 9, bgPos: "-200px -200px" },
 ];
 
-// ฟังก์ชันดึงชื่อผู้ใช้จาก LIFF
 async function initializeLiff() {
   try {
-    await liff.init({ liffId: "2007868117-v7XkrPDn" }); // ใส่ LIFF ID ของคุณ
+    await liff.init({ liffId: "2007868117-v7XkrPDn" }); // เปลี่ยนเป็น LIFF ID จริงของคุณ
     if (liff.isLoggedIn()) {
       const profile = await liff.getProfile();
       userName = profile.displayName || "ผู้เล่น";
@@ -147,7 +146,6 @@ closeBtn.addEventListener("click", () => {
   }
 });
 
-// เรียกใช้ LIFF ดึงชื่อก่อนเริ่มเกม
 window.onload = async () => {
   await initializeLiff();
   createBoard();
