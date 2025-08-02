@@ -107,13 +107,14 @@ function endGame(win) {
   gameEnded = true;
   clearInterval(timerInterval);
   if (win) {
-    message.textContent = `${userName} ชนะ 🎉`;
+    message.textContent = `${userName} wins 🎉`;
     message.classList.remove("fail");
   } else {
-    message.textContent = `${userName} แพ้ 😞 ลองใหม่!`;
+    message.textContent = `${userName} loses 😞 Try again!`;
     message.classList.add("fail");
   }
 }
+
 
 board.addEventListener("dragover", (e) => e.preventDefault());
 board.addEventListener("drop", (e) => {
@@ -151,3 +152,4 @@ window.onload = async () => {
   createBoard();
   startTimer();
 };
+
