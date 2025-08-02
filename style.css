@@ -1,0 +1,84 @@
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  margin: 0;
+  padding: 20px;
+  color: #333;
+}
+
+h1 {
+  font-size: 3rem;
+  margin-bottom: 10px;
+  color: #5d4037;
+  text-shadow: 2px 2px #fff0;
+}
+
+#timer {
+  font-size: 1.5rem;
+  margin: 10px 0;
+  color: #6d4c41;
+  background: #fff3e0;
+  padding: 10px 20px;
+  border-radius: 10px;
+  display: inline-block;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+#board, #pieces {
+  display: grid;
+  grid-template-columns: repeat(3, 100px);
+  gap: 5px;
+  justify-content: center;
+  margin: 20px auto;
+}
+
+.cell, .piece {
+  width: 100px;
+  height: 100px;
+  background-size: 300px 300px;
+  border: 2px solid #8d6e63;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.cell {
+  background-color: #ffe0b2;
+  background-image: none;
+}
+
+.piece {
+  cursor: grab;
+  background-image: url("https://image.makewebeasy.net/makeweb/0/wLFHGvpEg/Content/018_Chicken02.jpg?v=202405291424");
+  opacity: 0.9;
+  transition: transform 0.2s ease;
+}
+
+.piece:active {
+  transform: scale(1.05);
+  cursor: grabbing;
+}
+
+#message {
+  font-size: 1.8rem;
+  margin-top: 20px;
+  color: green;
+  font-weight: bold;
+  text-shadow: 1px 1px #fff;
+  animation: pop 0.3s ease-in-out;
+}
+
+#message.fail {
+  color: red;
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
