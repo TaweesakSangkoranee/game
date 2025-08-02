@@ -85,20 +85,6 @@ function handleDrop(e) {
   checkWin();
 }
 
-
-
-  // ถ้าวางใน container ด้านล่าง (#pieces)
-  if (dropTarget.id === "pieces") {
-    if (draggedPiece.parentNode !== piecesContainer) {
-      piecesContainer.appendChild(draggedPiece);
-    }
-  }
-
-  draggedPiece = null;
-
-
-
-
 function handleTouchDrop(e) {
   if (gameEnded) return;
 
@@ -136,8 +122,6 @@ function handleTouchDrop(e) {
   checkWin();
 }
 
-
-
 function checkWin() {
   const cells = document.querySelectorAll(".cell");
   for (let cell of cells) {
@@ -167,48 +151,31 @@ function shuffleArray(arr) {
   }
   return arr;
 }
+
+// LIFF initialization and Exit button setup
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    await liff.init({ liffId: "2007868084-owa5R88x" }); // Replace with your real LIFF ID
+    await liff.init({ liffId: "2007868084-owa5R88x" }); // เปลี่ยนเป็น LIFF ID จริงของคุณ
 
     if (!liff.isLoggedIn()) {
-      liff.login(); // Redirects to LINE login
+      liff.login();
       return;
     }
 
     const profile = await liff.getProfile();
-    const name = profile.displayName;
-    const userId = profile.userId;
-    const pictureUrl = profile.pictureUrl;
+    message.innerHTML = `👋 Hello, ${profile.displayName}`;
 
-    // Show greeting message with display name
-    const messageDiv = document.getElementById("message");
-    messageDiv.innerHTML = `👋 Hello, ${name}`;
-
-    // Optional: log user info
-    console.log("User Info:", { name, userId, pictureUrl });
-
-    // Exit LIFF when button is clicked
     const closeBtn = document.getElementById("closeBtn");
     closeBtn.addEventListener("click", () => {
       if (liff.isInClient()) {
-        liff.closeWindow();
+        liff.closeWindow(); // ปิด LIFF แล้วกลับหน้าแชท LINE
       } else {
-        alert("This is not running inside the LINE app.");
+        alert("This app is not running inside the LINE app.");
       }
     });
 
-  } catch (err) {
-    console.error("LIFF initialization error:", err);
+  } catch (error) {
+    console.error("LIFF initialization failed:", error);
     alert("Failed to initialize LINE LIFF.");
   }
 });
-document.getElementById("closeBtn").addEventListener("click", () => {
-  if (liff.isInClient()) {
-    liff.closeWindow();  // ปิด LIFF และกลับหน้าแชท LINE
-  } else {
-    alert("This app is not running inside the LINE app.");
-  }
-});
-
-
