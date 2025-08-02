@@ -116,6 +116,7 @@ function endGame(win) {
 }
 
 
+
 board.addEventListener("dragover", (e) => e.preventDefault());
 board.addEventListener("drop", (e) => {
   if (gameEnded || !draggedPiece) return;
@@ -152,5 +153,6 @@ window.onload = async () => {
   createBoard();
   startTimer();
 };
+
 
 
