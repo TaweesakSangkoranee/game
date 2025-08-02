@@ -203,4 +203,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     alert("Failed to initialize LINE LIFF.");
   }
 });
+document.getElementById("closeBtn").addEventListener("click", () => {
+  if (liff.isInClient()) {
+    liff.closeWindow();  // ปิด LIFF และกลับหน้าแชท LINE
+  } else {
+    alert("This app is not running inside the LINE app.");
+  }
+});
+
 
