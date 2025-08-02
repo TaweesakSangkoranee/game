@@ -162,9 +162,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-    const closeBtn = document.getElementById("closeBtn");
+   const closeBtn = document.getElementById("closeBtn");
 closeBtn.addEventListener("click", () => {
   console.log("Exit button clicked");
+  console.log("Is in LINE client:", liff.isInClient());
   if (liff.isInClient()) {
     liff.closeWindow();
   } else {
@@ -172,9 +173,11 @@ closeBtn.addEventListener("click", () => {
   }
 });
 
+
   } catch (error) {
     console.error("LIFF initialization failed:", error);
     alert("Failed to initialize LINE LIFF.");
   }
 });
+
 
