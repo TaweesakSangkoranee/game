@@ -162,20 +162,19 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-    const profile = await liff.getProfile();
-    message.innerHTML = `👋 Hello, ${profile.displayName}`;
-
     const closeBtn = document.getElementById("closeBtn");
-    closeBtn.addEventListener("click", () => {
-      if (liff.isInClient()) {
-        liff.closeWindow(); // ปิด LIFF แล้วกลับหน้าแชท LINE
-      } else {
-        alert("This app is not running inside the LINE app.");
-      }
-    });
+closeBtn.addEventListener("click", () => {
+  console.log("Exit button clicked");
+  if (liff.isInClient()) {
+    liff.closeWindow();
+  } else {
+    alert("This app is not running inside the LINE app.");
+  }
+});
 
   } catch (error) {
     console.error("LIFF initialization failed:", error);
     alert("Failed to initialize LINE LIFF.");
   }
 });
+
