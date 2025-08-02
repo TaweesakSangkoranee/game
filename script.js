@@ -162,16 +162,15 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-   const closeBtn = document.getElementById("closeBtn");
+  const closeBtn = document.getElementById("closeBtn");
 closeBtn.addEventListener("click", () => {
-  console.log("Exit button clicked");
-  console.log("Is in LINE client:", liff.isInClient());
   if (liff.isInClient()) {
-    liff.closeWindow();
+    liff.closeWindow();  // ปิด LIFF แล้วกลับไปหน้าแชท LINE
   } else {
     alert("This app is not running inside the LINE app.");
   }
 });
+
 
 
   } catch (error) {
@@ -179,5 +178,6 @@ closeBtn.addEventListener("click", () => {
     alert("Failed to initialize LINE LIFF.");
   }
 });
+
 
 
