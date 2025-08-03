@@ -49,7 +49,7 @@ h1 {
 
 .piece {
   cursor: grab;
-  background-image: url("https://uhdmax.net/wp-content/uploads/2025/07/1-1-4.jpg");
+  background-image: url("https://d3dyak49qszsk5.cloudfront.net/Ariane_6_38cb36f8b2.jpg");
   opacity: 0.9;
   transition: transform 0.2s ease;
 }
@@ -98,3 +98,4 @@ h1 {
 #closeBtn:hover {
   background-color: #b71c1c;
 }
+
